@@ -42,20 +42,18 @@
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutButton = new System.Windows.Forms.ToolStripMenuItem();
             this.closeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.urlBox = new System.Windows.Forms.TextBox();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
+            this.urlBox = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.mainMenu.SuspendLayout();
-            this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -157,54 +155,6 @@
             this.closeButton.Text = "Exit";
             this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             // 
-            // panel4
-            // 
-            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel4.BackgroundImage = global::Montero.Properties.Resources.Camada_2;
-            this.panel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel4.Location = new System.Drawing.Point(591, 9);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(14, 25);
-            this.panel4.TabIndex = 8;
-            // 
-            // panel3
-            // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.BackgroundImage = global::Montero.Properties.Resources.Camada_3;
-            this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel3.Controls.Add(this.urlBox);
-            this.panel3.Location = new System.Drawing.Point(123, 9);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(468, 25);
-            this.panel3.TabIndex = 8;
-            // 
-            // urlBox
-            // 
-            this.urlBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(214)))), ((int)(((byte)(214)))));
-            this.urlBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.urlBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.urlBox.ForeColor = System.Drawing.Color.Black;
-            this.urlBox.Location = new System.Drawing.Point(-1, 3);
-            this.urlBox.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
-            this.urlBox.Name = "urlBox";
-            this.urlBox.Size = new System.Drawing.Size(468, 18);
-            this.urlBox.TabIndex = 6;
-            this.urlBox.WordWrap = false;
-            this.urlBox.TextChanged += new System.EventHandler(this.urlBox_TextChanged);
-            this.urlBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.urlBox_KeyPress_1);
-            // 
-            // panel2
-            // 
-            this.panel2.BackgroundImage = global::Montero.Properties.Resources.Camada_1;
-            this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel2.Location = new System.Drawing.Point(109, 9);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(14, 25);
-            this.panel2.TabIndex = 7;
-            // 
             // pictureBox3
             // 
             this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -243,23 +193,50 @@
             // 
             this.pictureBox4.BackgroundImage = global::Montero.Properties.Resources.refresh1;
             this.pictureBox4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox4.Location = new System.Drawing.Point(74, 14);
+            this.pictureBox4.Location = new System.Drawing.Point(59, 14);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(16, 16);
             this.pictureBox4.TabIndex = 9;
             this.pictureBox4.TabStop = false;
             this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
             // 
+            // urlBox
+            // 
+            this.urlBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.urlBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(214)))), ((int)(((byte)(214)))));
+            this.urlBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.urlBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.urlBox.ForeColor = System.Drawing.Color.Black;
+            this.urlBox.Location = new System.Drawing.Point(5, 4);
+            this.urlBox.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
+            this.urlBox.Name = "urlBox";
+            this.urlBox.Size = new System.Drawing.Size(507, 18);
+            this.urlBox.TabIndex = 6;
+            this.urlBox.WordWrap = false;
+            this.urlBox.TextChanged += new System.EventHandler(this.urlBox_TextChanged);
+            this.urlBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.urlBox_KeyPress_1);
+            // 
+            // panel3
+            // 
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.BackgroundImage = global::Montero.Properties.Resources.Camada_3;
+            this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel3.Controls.Add(this.urlBox);
+            this.panel3.Location = new System.Drawing.Point(96, 9);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(517, 25);
+            this.panel3.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(656, 350);
             this.Controls.Add(this.pictureBox4);
-            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
-            this.Controls.Add(this.panel2);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
@@ -269,12 +246,12 @@
             this.Text = "Montero";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.mainMenu.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -285,10 +262,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
-        private System.Windows.Forms.TextBox urlBox;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.ContextMenuStrip mainMenu;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem newTabButton;
@@ -301,6 +274,8 @@
         private System.Windows.Forms.ToolStripMenuItem aboutButton;
         private System.Windows.Forms.ToolStripMenuItem closeButton;
         private System.Windows.Forms.PictureBox pictureBox4;
+        private System.Windows.Forms.TextBox urlBox;
+        private System.Windows.Forms.Panel panel3;
     }
 }
 

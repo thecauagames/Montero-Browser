@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using EasyTabs;
+using CefSharp;
 
 namespace Montero
 {
@@ -17,23 +17,16 @@ namespace Montero
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            AppContainer container = new AppContainer();  
+            Application.ApplicationExit += OnApplicationExit;
+            Application.Run(new Form1());
+        }
 
-            container.Tabs.Add(
-                new EasyTabs.TitleBarTab(container)
-                {
-                    Content = new Form1
-                    {
-                        Text = "Nova guia"
-                    }
-                }
-            );
-
-            container.SelectedTabIndex = 0;
-
-            TitleBarTabsApplicationContext applicationContext = new TitleBarTabsApplicationContext();
-            applicationContext.Start(container);
-            Application.Run(applicationContext);
+        private static void OnApplicationExit(object sender, EventArgs e)
+        {
+            if (Cef.IsInitialized)
+            {
+                Cef.Shutdown();
+            }
         }
     }
 }

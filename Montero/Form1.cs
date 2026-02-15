@@ -1,125 +1,381 @@
-﻿using System;
+using CefSharp;
+using CefSharp.WinForms;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CefSharp;
-using CefSharp.SchemeHandler;
-using CefSharp.WinForms;
-using EasyTabs;
 
 namespace Montero
 {
-
     public partial class Form1 : Form
     {
-        protected TitleBarTabs ParentTabs
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
+
+        private ToolStripMenuItem darkModeButton;
+        private Dictionary<PictureBox, Image> originalNavIcons;
+        private Dictionary<PictureBox, Image> darkNavIcons;
+        private readonly Dictionary<string, ChromiumWebBrowser> browsersByTabId = new Dictionary<string, ChromiumWebBrowser>();
+        private readonly Dictionary<string, string> tabTitleById = new Dictionary<string, string>();
+        private readonly Dictionary<string, Image> faviconCache = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
+        private readonly object faviconCacheLock = new object();
+        private PhotonTabBar tabBar;
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMargins);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Margins
+        {
+            public int Left;
+            public int Right;
+            public int Top;
+            public int Bottom;
+        }
+
+        public string InitialUrl { get; set; } = "https://www.google.com";
+
+        private ChromiumWebBrowser ActiveBrowser
         {
             get
             {
-                return (ParentForm as TitleBarTabs);
+                if (tabBar == null || string.IsNullOrWhiteSpace(tabBar.SelectedTabId))
+                {
+                    return null;
+                }
+
+                browsersByTabId.TryGetValue(tabBar.SelectedTabId, out ChromiumWebBrowser browser);
+                return browser;
             }
         }
 
-        
-        public ChromiumWebBrowser chrome;
         public Form1()
         {
             Icon = Properties.Resources.montero_unstable;
             InitializeComponent();
-        }
-
-        private void Chrome_AddressChanged(object sender, AddressChangedEventArgs e)
-        {
-            this.Invoke(new MethodInvoker(() =>
-            {
-                urlBox.Text = e.Address;
-            }));
-
-            this.Invoke(new MethodInvoker(() =>
-            {
-                Uri url = new Uri("https://" + new Uri(chrome.Address).Host + "/favicon.ico");
-                try
-                {
-                    Icon img = new Icon(new System.IO.MemoryStream(new
-                    System.Net.WebClient().DownloadData(url)));
-                    this.Icon = img;
-                }
-                catch (Exception)
-                {
-                    this.Icon = Properties.Resources.montero_unstable;
-                }
-            }));
-        }
-
-        private void Chrome_TitleChanged(object sender, TitleChangedEventArgs e)
-        {
-            this.Invoke(new MethodInvoker(() =>
-            {
-                Text = e.Title;
-            }));
+            newWindowButton.Click += newWindowButton_Click;
+            SizeChanged += Form1_SizeChanged;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            EnsureNavigationIconsPrepared();
+            InitializePhotonTabs();
 
-            var settings = new CefSettings();
+            if (!Cef.IsInitialized)
+            {
+                var settings = new CefSettings
+                {
+                    CachePath = Path.GetFullPath("cache")
+                };
+                Cef.Initialize(settings);
+            }
 
-   //         settings.RegisterScheme(new CefCustomScheme
-   //         {
-   //             SchemeName = "montero",
-   //             DomainName = "cefsharp",
-   //             SchemeHandlerFactory = new FolderSchemeHandlerFactory(
-   //                 rootFolder: @".\Montero\Resources\",
-   //                 hostName: "cefsharp",
-   //                 defaultPage: "startpage.html" // will default to index.html
-   //             )
-   //         });
-
-            settings.CachePath = "cache";
-            urlBox.Text = "https://google.com";
-            chrome = new ChromiumWebBrowser(urlBox.Text);
-            this.Controls.Add(chrome);
-            this.panel1.Controls.Add(chrome);
-            chrome.Dock = DockStyle.Fill;
-            chrome.AddressChanged += Chrome_AddressChanged;
-            chrome.TitleChanged += Chrome_TitleChanged;
-            DownloadHandler downloadHandler = new DownloadHandler();
-            chrome.DownloadHandler = downloadHandler;
+            AddDarkModeMenuButton();
+            ApplyTheme();
+            AddNewBrowserTab(InitialUrl, true);
         }
 
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private void InitializePhotonTabs()
         {
-            Cef.Shutdown();
+            tabBar = new PhotonTabBar
+            {
+                Height = 36
+            };
+
+            tabBar.AddTabRequested += TabBar_AddTabRequested;
+            tabBar.TabCloseRequested += TabBar_TabCloseRequested;
+            tabBar.TabSelected += TabBar_TabSelected;
+
+            Controls.Add(tabBar);
+            tabBar.BringToFront();
+
+            MoveNavigationBarDown(tabBar.Height);
+            ApplyWindowChrome();
+        }
+
+        private void MoveNavigationBarDown(int offset)
+        {
+            pictureBox1.Top += offset;
+            pictureBox2.Top += offset;
+            pictureBox3.Top += offset;
+            pictureBox4.Top += offset;
+            panel3.Top += offset;
+
+            panel1.Top += offset;
+            panel1.Height -= offset;
+        }
+
+        private void AddNewBrowserTab(string url, bool selectTab)
+        {
+            string tabId = Guid.NewGuid().ToString("N");
+            tabBar.AddTab(tabId, "New Tab");
+            tabTitleById[tabId] = "New Tab";
+
+            var browser = new ChromiumWebBrowser(NormalizeUrl(url));
+            browser.Dock = DockStyle.Fill;
+            browser.AddressChanged += (sender, e) => Browser_AddressChanged(tabId, e);
+            browser.TitleChanged += (sender, e) => Browser_TitleChanged(tabId, e);
+            browser.FrameLoadEnd += Browser_FrameLoadEnd;
+            browser.DownloadHandler = new DownloadHandler();
+
+            browsersByTabId[tabId] = browser;
+
+            if (selectTab)
+            {
+                tabBar.SelectTab(tabId);
+                ShowBrowser(tabId);
+                UpdateWindowTitle(tabId);
+            }
+        }
+
+        private void ShowBrowser(string tabId)
+        {
+            panel1.Controls.Clear();
+            if (!string.IsNullOrWhiteSpace(tabId) && browsersByTabId.TryGetValue(tabId, out ChromiumWebBrowser browser))
+            {
+                panel1.Controls.Add(browser);
+                urlBox.Text = browser.Address;
+            }
+        }
+
+        private void CloseBrowserTab(string tabId)
+        {
+            if (string.IsNullOrWhiteSpace(tabId) || !browsersByTabId.TryGetValue(tabId, out ChromiumWebBrowser browser))
+            {
+                return;
+            }
+
+            // Keep one tab alive like mainstream browsers; never close the whole app from tab-close.
+            if (browsersByTabId.Count == 1)
+            {
+                string resetUrl = "https://www.google.com";
+                tabTitleById[tabId] = "New Tab";
+                tabBar.UpdateTabTitle(tabId, "New Tab");
+                tabBar.UpdateTabIcon(tabId, null);
+                browser.Load(resetUrl);
+
+                if (tabBar.SelectedTabId == tabId)
+                {
+                    urlBox.Text = resetUrl;
+                    UpdateWindowTitle(tabId);
+                }
+
+                return;
+            }
+
+            bool wasActive = tabBar.SelectedTabId == tabId;
+            string fallbackTabId = null;
+            if (wasActive)
+            {
+                fallbackTabId = browsersByTabId.Keys.FirstOrDefault(id => id != tabId);
+                if (!string.IsNullOrWhiteSpace(fallbackTabId))
+                {
+                    tabBar.SelectTab(fallbackTabId);
+                    ShowBrowser(fallbackTabId);
+                    UpdateWindowTitle(fallbackTabId);
+                }
+            }
+
+            browsersByTabId.Remove(tabId);
+            tabTitleById.Remove(tabId);
+            tabBar.RemoveTab(tabId);
+            try
+            {
+                browser.Dispose();
+            }
+            catch
+            {
+            }
+
+            if (wasActive && !string.IsNullOrWhiteSpace(tabBar.SelectedTabId))
+            {
+                ShowBrowser(tabBar.SelectedTabId);
+                UpdateWindowTitle(tabBar.SelectedTabId);
+            }
+        }
+
+        private void Browser_AddressChanged(string tabId, AddressChangedEventArgs e)
+        {
+            SafeUiInvoke(() =>
+            {
+                if (tabBar.SelectedTabId == tabId)
+                {
+                    urlBox.Text = e.Address;
+                }
+            });
+
+            TryUpdateTabFavicon(tabId, e.Address);
+        }
+
+        private void Browser_TitleChanged(string tabId, TitleChangedEventArgs e)
+        {
+            SafeUiInvoke(() =>
+            {
+                string title = string.IsNullOrWhiteSpace(e.Title) ? "New Tab" : e.Title;
+                tabTitleById[tabId] = title;
+                string shortTitle = title.Length > 26 ? title.Substring(0, 26) + "..." : title;
+                tabBar.UpdateTabTitle(tabId, shortTitle);
+
+                if (tabBar.SelectedTabId == tabId)
+                {
+                    Text = FormatWindowTitle(title);
+                }
+            });
+        }
+
+        private void Browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
+        {
+            if (!e.Frame.IsMain)
+            {
+                return;
+            }
+
+            string isDarkMode = AppContainer.IsDarkModeEnabled ? "true" : "false";
+            string script =
+                "(function() {" +
+                "const styleId = 'montero-dark-mode-style';" +
+                "let style = document.getElementById(styleId);" +
+                "if (" + isDarkMode + ") {" +
+                " if (!style) {" +
+                "  style = document.createElement('style');" +
+                "  style.id = styleId;" +
+                "  style.textContent = ':root{color-scheme:dark!important;}html,body{background:#101114!important;color:#e6e6e6!important;}';" +
+                "  if (document.head) { document.head.appendChild(style); }" +
+                " }" +
+                "} else if (style) {" +
+                " style.remove();" +
+                "}" +
+                "})();";
+
+            e.Frame.ExecuteJavaScriptAsync(script);
+        }
+
+        private void TabBar_AddTabRequested(object sender, EventArgs e)
+        {
+            AddNewBrowserTab("https://www.google.com", true);
+        }
+
+        private void TabBar_TabCloseRequested(object sender, string tabId)
+        {
+            if (browsersByTabId.Count <= 1)
+            {
+                return;
+            }
+
+            CloseBrowserTab(tabId);
+        }
+
+        private void TabBar_TabSelected(object sender, string tabId)
+        {
+            ShowBrowser(tabId);
+            UpdateWindowTitle(tabId);
+        }
+
+        private void AddDarkModeMenuButton()
+        {
+            darkModeButton = new ToolStripMenuItem
+            {
+                Name = "darkModeButton",
+                Text = "Dark Mode",
+                CheckOnClick = true,
+                Checked = AppContainer.IsDarkModeEnabled
+            };
+            darkModeButton.CheckedChanged += darkModeButton_CheckedChanged;
+
+            mainMenu.Items.Insert(mainMenu.Items.Count - 2, new ToolStripSeparator());
+            mainMenu.Items.Insert(mainMenu.Items.Count - 2, darkModeButton);
+        }
+
+        public void ApplyTheme()
+        {
+            bool dark = AppContainer.IsDarkModeEnabled;
+            Color background = dark ? Color.FromArgb(24, 26, 31) : Color.White;
+            Color chromeSurface = dark ? Color.FromArgb(33, 36, 43) : Color.FromArgb(236, 236, 236);
+            Color textColor = dark ? Color.FromArgb(224, 227, 233) : Color.Black;
+
+            BackColor = background;
+            panel1.BackColor = background;
+            panel3.BackColor = chromeSurface;
+            panel3.BackgroundImage = null;
+            urlBox.BackColor = chromeSurface;
+            urlBox.ForeColor = textColor;
+            mainMenu.BackColor = dark ? Color.FromArgb(38, 41, 48) : Color.White;
+            mainMenu.ForeColor = textColor;
+            tabBar.DarkMode = dark;
+            tabBar.Invalidate();
+            ApplyNavigationIconTheme(dark);
+            ApplyWindowChrome();
+
+            if (darkModeButton != null)
+            {
+                darkModeButton.Checked = dark;
+            }
+
+            ApplyDarkModeToAllPages();
+        }
+
+        private void ApplyDarkModeToAllPages()
+        {
+            foreach (var browser in browsersByTabId.Values)
+            {
+                if (browser == null || browser.IsDisposed || browser.IsLoading)
+                {
+                    continue;
+                }
+
+                browser.GetMainFrame().ExecuteJavaScriptAsync(
+                    "(function() {" +
+                    "const id='montero-dark-mode-style';" +
+                    "let s=document.getElementById(id);" +
+                    "if (" + (AppContainer.IsDarkModeEnabled ? "true" : "false") + ") {" +
+                    " if(!s){s=document.createElement('style');s.id=id;s.textContent=':root{color-scheme:dark!important;}html,body{background:#101114!important;color:#e6e6e6!important;}';document.head&&document.head.appendChild(s);}" +
+                    "} else if(s) { s.remove(); }" +
+                    "})();");
+            }
+        }
+
+        private void darkModeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            AppContainer.SetDarkModeEnabled(darkModeButton.Checked);
+            ApplyTheme();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (chrome.CanGoBack)
-                chrome.Back();
+            if (ActiveBrowser != null && ActiveBrowser.CanGoBack)
+            {
+                ActiveBrowser.Back();
+            }
         }
 
         private void urlBox_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (chrome.CanGoForward)
-                chrome.Forward();
+            if (ActiveBrowser != null && ActiveBrowser.CanGoForward)
+            {
+                ActiveBrowser.Forward();
+            }
         }
 
         private void urlBox_KeyPress_1(object sender, KeyPressEventArgs e)
         {
-             if (e.KeyChar == (char)13)
-                chrome.Load(urlBox.Text);
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                e.Handled = true;
+                ActiveBrowser?.Load(NormalizeUrl(urlBox.Text));
+            }
         }
 
         private void pictureBox3_Click(object sender, EventArgs e)
@@ -127,31 +383,257 @@ namespace Montero
             mainMenu.Show(pictureBox3, 0, pictureBox3.Height + 7);
         }
 
+        private static string NormalizeUrl(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                return "https://www.google.com";
+            }
+
+            string trimmed = raw.Trim();
+            if (Uri.TryCreate(trimmed, UriKind.Absolute, out Uri _))
+            {
+                return trimmed;
+            }
+
+            if (trimmed.Contains(" "))
+            {
+                return "https://www.google.com/search?q=" + Uri.EscapeDataString(trimmed);
+            }
+
+            return "https://" + trimmed;
+        }
+
         private void aboutButton_Click(object sender, EventArgs e)
         {
-            AboutWindow about = new AboutWindow();
-            about.ShowDialog();
+            using (var about = new AboutWindow())
+            {
+                about.ShowDialog();
+            }
         }
 
         private void closeButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void newTabButton_Click(object sender, EventArgs e)
         {
+            AddNewBrowserTab("https://www.google.com", true);
+        }
 
+        private void newWindowButton_Click(object sender, EventArgs e)
+        {
+            var window = new Form1();
+            window.Show();
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
         {
-                chrome.Reload();
+            ActiveBrowser?.Reload();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-
         }
+
+        private void Form1_SizeChanged(object sender, EventArgs e)
+        {
+            ApplyWindowChrome();
+        }
+
+        private void EnsureNavigationIconsPrepared()
+        {
+            if (originalNavIcons != null)
+            {
+                return;
+            }
+
+            originalNavIcons = new Dictionary<PictureBox, Image>
+            {
+                [pictureBox1] = pictureBox1.BackgroundImage,
+                [pictureBox2] = pictureBox2.BackgroundImage,
+                [pictureBox3] = pictureBox3.BackgroundImage,
+                [pictureBox4] = pictureBox4.BackgroundImage
+            };
+
+            darkNavIcons = new Dictionary<PictureBox, Image>();
+            foreach (var entry in originalNavIcons)
+            {
+                darkNavIcons[entry.Key] = InvertImage(entry.Value);
+            }
+        }
+
+        private void ApplyNavigationIconTheme(bool dark)
+        {
+            EnsureNavigationIconsPrepared();
+            var iconSet = dark ? darkNavIcons : originalNavIcons;
+            foreach (var entry in iconSet)
+            {
+                entry.Key.BackgroundImage = entry.Value;
+            }
+        }
+
+        private static Image InvertImage(Image image)
+        {
+            if (image == null)
+            {
+                return null;
+            }
+
+            Bitmap source = new Bitmap(image);
+            Bitmap output = new Bitmap(source.Width, source.Height);
+
+            for (int y = 0; y < source.Height; y++)
+            {
+                for (int x = 0; x < source.Width; x++)
+                {
+                    Color pixel = source.GetPixel(x, y);
+                    Color inverted = Color.FromArgb(pixel.A, 255 - pixel.R, 255 - pixel.G, 255 - pixel.B);
+                    output.SetPixel(x, y, inverted);
+                }
+            }
+
+            source.Dispose();
+            return output;
+        }
+
+        private void ApplyWindowChrome()
+        {
+            if (!IsHandleCreated || tabBar == null)
+            {
+                return;
+            }
+
+            int dark = AppContainer.IsDarkModeEnabled ? 1 : 0;
+            DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
+            DwmSetWindowAttribute(Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_OLD, ref dark, sizeof(int));
+
+            var margins = new Margins
+            {
+                Left = 0,
+                Right = 0,
+                Top = tabBar.Height + 2,
+                Bottom = 0
+            };
+
+            DwmExtendFrameIntoClientArea(Handle, ref margins);
+        }
+
+        private void TryUpdateTabFavicon(string tabId, string address)
+        {
+            if (!Uri.TryCreate(address, UriKind.Absolute, out Uri pageUri) || string.IsNullOrWhiteSpace(pageUri.Host))
+            {
+                return;
+            }
+
+            Image cachedIcon;
+            lock (faviconCacheLock)
+            {
+                faviconCache.TryGetValue(pageUri.Host, out cachedIcon);
+            }
+
+            if (cachedIcon != null)
+            {
+                TryInvokeTabIconUpdate(tabId, cachedIcon);
+                return;
+            }
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    Uri faviconUri = new Uri(pageUri.Scheme + "://" + pageUri.Host + "/favicon.ico");
+                    using (var client = new WebClient())
+                    using (var stream = new MemoryStream(client.DownloadData(faviconUri)))
+                    using (var icon = new Icon(stream))
+                    {
+                        Image iconImage = icon.ToBitmap();
+                        Image cached;
+                        lock (faviconCacheLock)
+                        {
+                            if (!faviconCache.TryGetValue(pageUri.Host, out cached))
+                            {
+                                faviconCache[pageUri.Host] = iconImage;
+                                cached = iconImage;
+                            }
+                        }
+
+                        if (cached != iconImage)
+                        {
+                            iconImage.Dispose();
+                        }
+
+                        TryInvokeTabIconUpdate(tabId, cached);
+                    }
+                }
+                catch
+                {
+                }
+            });
+        }
+
+        private void TryInvokeTabIconUpdate(string tabId, Image icon)
+        {
+            if (IsDisposed || !IsHandleCreated || tabBar == null || tabBar.IsDisposed)
+            {
+                return;
+            }
+
+            try
+            {
+                BeginInvoke(new MethodInvoker(() => tabBar.UpdateTabIcon(tabId, icon)));
+            }
+            catch
+            {
+            }
+        }
+
+        private void SafeUiInvoke(Action action)
+        {
+            if (IsDisposed || !IsHandleCreated)
+            {
+                return;
+            }
+
+            try
+            {
+                BeginInvoke(new MethodInvoker(() =>
+                {
+                    if (IsDisposed)
+                    {
+                        return;
+                    }
+
+                    action();
+                }));
+            }
+            catch
+            {
+            }
+        }
+
+        private static string FormatWindowTitle(string pageTitle)
+        {
+            string value = string.IsNullOrWhiteSpace(pageTitle) ? "New Tab" : pageTitle;
+            return value + " - Montero";
+        }
+
+        private void UpdateWindowTitle(string tabId)
+        {
+            if (string.IsNullOrWhiteSpace(tabId))
+            {
+                Text = "Montero";
+                return;
+            }
+
+            if (!tabTitleById.TryGetValue(tabId, out string title))
+            {
+                title = "New Tab";
+            }
+
+            Text = FormatWindowTitle(title);
+        }
+
     }
 }
-
