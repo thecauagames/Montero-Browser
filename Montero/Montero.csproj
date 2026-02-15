@@ -18,6 +18,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\Familia\Pictures\the cauagames library\imagens aleatorias\Projects\Montero\omaga\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -38,7 +39,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,7 +60,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\montero-unstable.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\unstable.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -98,6 +98,11 @@
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
@@ -266,6 +271,40 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\three-dots-vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\three-dots-vertical1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-right-short.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-left-short.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ellipsis-vertical-solid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-rotate-right-solid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-right-solid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-left-solid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="manifest.xml" />
+    <Content Include="NewMonteroIcon_Unstable.ico" />
+    <None Include="Resources\MonteroWordmark1.png" />
+    <None Include="Resources\NewMonteroIcon_Unstable1.png" />
+    <None Include="Resources\ellipsis-vertical-solid1.png" />
+    <None Include="Resources\arrow-rotate-right-solid1.png" />
+    <None Include="Resources\arrow-right-solid1.png" />
+    <None Include="Resources\arrow-left-solid1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -48,6 +48,7 @@ namespace Montero
         {
             Height = 36;
             Dock = DockStyle.Top;
+            Font = new Font("Segoe UI", 9f, FontStyle.Regular, GraphicsUnit.Point);
             SetStyle(
                 ControlStyles.UserPaint |
                 ControlStyles.AllPaintingInWmPaint |
@@ -141,13 +142,13 @@ namespace Montero
 
         protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            // Keep transparent so DWM frame tint stays visible.
+            // Intentionally transparent to preserve native title-bar tint.
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
             foreach (TabVisual tab in tabs)
             {
@@ -235,9 +236,10 @@ namespace Montero
         {
             bool selected = tab.Id == selectedTabId;
             Rectangle rect = tab.Bounds;
+            Color tabFillColor = selected ? GetActiveColor() : GetInactiveColor();
 
             using (GraphicsPath path = CreateRoundedRectPath(rect, 3))
-            using (var fill = new SolidBrush(selected ? GetActiveColor() : GetInactiveColor()))
+            using (var fill = new SolidBrush(tabFillColor))
             using (var border = new Pen(GetBorderColor()))
             {
                 g.FillPath(fill, path);
@@ -253,12 +255,13 @@ namespace Montero
             }
 
             Rectangle textRect = new Rectangle(textLeft, rect.Top + 5, Math.Max(12, rect.Width - (textLeft - rect.Left) - 24), rect.Height - 10);
-            using (var textBrush = new SolidBrush(GetTextColor()))
+            using (var brush = new SolidBrush(GetTextColor()))
             using (var format = new StringFormat(StringFormatFlags.NoWrap))
             {
                 format.Trimming = StringTrimming.EllipsisCharacter;
                 format.LineAlignment = StringAlignment.Center;
-                g.DrawString(tab.Title, Font, textBrush, textRect, format);
+                format.Alignment = StringAlignment.Near;
+                g.DrawString(tab.Title, Font, brush, textRect, format);
             }
 
             using (var pen = new Pen(GetTextColor(), 1.6f))
@@ -302,7 +305,7 @@ namespace Montero
         private Color GetTextColor()
         {
             // Light mode must always be solid dark text for readability over translucent backgrounds.
-            return DarkMode ? Color.FromArgb(240, 243, 248) : Color.FromArgb(8, 12, 18);
+            return DarkMode ? Color.FromArgb(244, 247, 252) : Color.FromArgb(20, 26, 36);
         }
 
         private static GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)

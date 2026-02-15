@@ -19,7 +19,7 @@ namespace Montero.Properties {
     // através de uma ferramenta como ResGen ou Visual Studio.
     // Para adicionar ou remover um associado, edite o arquivo .ResX e execute ResGen novamente
     // com a opção /str, ou recrie o projeto do VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,9 +63,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap back_button {
+        internal static System.Drawing.Bitmap arrow_left_solid {
             get {
-                object obj = ResourceManager.GetObject("back_button", resourceCulture);
+                object obj = ResourceManager.GetObject("arrow-left-solid", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Camada_1 {
+        internal static System.Drawing.Bitmap arrow_right_solid {
             get {
-                object obj = ResourceManager.GetObject("Camada 1", resourceCulture);
+                object obj = ResourceManager.GetObject("arrow-right-solid", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Camada_2 {
+        internal static System.Drawing.Bitmap arrow_rotate_right_solid {
             get {
-                object obj = ResourceManager.GetObject("Camada 2", resourceCulture);
+                object obj = ResourceManager.GetObject("arrow-rotate-right-solid", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Camada_3 {
+        internal static System.Drawing.Bitmap ellipsis_vertical_solid {
             get {
-                object obj = ResourceManager.GetObject("Camada 3", resourceCulture);
+                object obj = ResourceManager.GetObject("ellipsis-vertical-solid", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap forward_button {
+        internal static System.Drawing.Bitmap MonteroWordmark {
             get {
-                object obj = ResourceManager.GetObject("forward_button", resourceCulture);
+                object obj = ResourceManager.GetObject("MonteroWordmark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,19 +113,9 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap hamburger_menu_icon {
+        internal static System.Drawing.Bitmap NewMonteroIcon_Unstable {
             get {
-                object obj = ResourceManager.GetObject("hamburger_menu_icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap montero_logo_unstable {
-            get {
-                object obj = ResourceManager.GetObject("montero-logo-unstable", resourceCulture);
+                object obj = ResourceManager.GetObject("NewMonteroIcon_Unstable", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,40 +123,10 @@ namespace Montero.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Icon semelhante a (Ícone).
         /// </summary>
-        internal static System.Drawing.Icon montero_release {
+        internal static System.Drawing.Icon unstable {
             get {
-                object obj = ResourceManager.GetObject("montero_release", resourceCulture);
+                object obj = ResourceManager.GetObject("unstable", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Icon semelhante a (Ícone).
-        /// </summary>
-        internal static System.Drawing.Icon montero_unstable {
-            get {
-                object obj = ResourceManager.GetObject("montero_unstable", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap refresh {
-            get {
-                object obj = ResourceManager.GetObject("refresh", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap refresh1 {
-            get {
-                object obj = ResourceManager.GetObject("refresh1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

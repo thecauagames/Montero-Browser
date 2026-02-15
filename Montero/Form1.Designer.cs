@@ -64,7 +64,7 @@
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panel1.Location = new System.Drawing.Point(-2, 42);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(658, 308);
+            this.panel1.Size = new System.Drawing.Size(658, 399);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -158,44 +158,44 @@
             // pictureBox3
             // 
             this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox3.BackgroundImage = global::Montero.Properties.Resources.hamburger_menu_icon;
+            this.pictureBox3.BackgroundImage = global::Montero.Properties.Resources.ellipsis_vertical_solid;
             this.pictureBox3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox3.Location = new System.Drawing.Point(628, 14);
+            this.pictureBox3.Location = new System.Drawing.Point(624, 12);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox3.Size = new System.Drawing.Size(20, 20);
             this.pictureBox3.TabIndex = 5;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
             // pictureBox2
             // 
-            this.pictureBox2.BackgroundImage = global::Montero.Properties.Resources.forward_button;
+            this.pictureBox2.BackgroundImage = global::Montero.Properties.Resources.arrow_right_solid;
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox2.Location = new System.Drawing.Point(34, 14);
+            this.pictureBox2.Location = new System.Drawing.Point(40, 12);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox2.Size = new System.Drawing.Size(20, 20);
             this.pictureBox2.TabIndex = 4;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::Montero.Properties.Resources.back_button;
+            this.pictureBox1.BackgroundImage = global::Montero.Properties.Resources.arrow_left_solid;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 14);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox1.Size = new System.Drawing.Size(20, 20);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // pictureBox4
             // 
-            this.pictureBox4.BackgroundImage = global::Montero.Properties.Resources.refresh1;
+            this.pictureBox4.BackgroundImage = global::Montero.Properties.Resources.arrow_rotate_right_solid;
             this.pictureBox4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox4.Location = new System.Drawing.Point(59, 14);
+            this.pictureBox4.Location = new System.Drawing.Point(68, 12);
             this.pictureBox4.Name = "pictureBox4";
-            this.pictureBox4.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox4.Size = new System.Drawing.Size(20, 20);
             this.pictureBox4.TabIndex = 9;
             this.pictureBox4.TabStop = false;
             this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
@@ -204,7 +204,7 @@
             // 
             this.urlBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.urlBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(214)))), ((int)(((byte)(214)))));
+            this.urlBox.BackColor = System.Drawing.Color.WhiteSmoke;
             this.urlBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.urlBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.urlBox.ForeColor = System.Drawing.Color.Black;
@@ -221,9 +221,10 @@
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.BackgroundImage = global::Montero.Properties.Resources.Camada_3;
+            this.panel3.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.panel3.Controls.Add(this.urlBox);
+            this.panel3.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.panel3.Location = new System.Drawing.Point(96, 9);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(517, 25);
@@ -234,7 +235,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(656, 350);
+            this.ClientSize = new System.Drawing.Size(656, 441);
             this.Controls.Add(this.pictureBox4);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.pictureBox3);
@@ -242,6 +243,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(640, 39);
             this.Name = "Form1";
             this.Text = "Montero";
             this.Load += new System.EventHandler(this.Form1_Load);

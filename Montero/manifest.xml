@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="Application Name" type="win32" version="12.0.0.0"></assemblyIdentity>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimAppAccess" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimBaseAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimServicesAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimMdlrAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimMiscAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimNcAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimDrftAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity name="CimElectrodeAPI" version="12.0.0.0" type="win32"></assemblyIdentity>
+    </dependentAssembly>
+  </dependency>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+      </requestedPrivileges>
+    </security>
+    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+      <application>
+        <!-- Windows 10 compatibility -->
+        <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+      </application>
+    </compatibility>
+  </trustInfo>
+</assembly>

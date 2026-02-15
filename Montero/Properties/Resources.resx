@@ -118,37 +118,26 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Camada 2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Camada 2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ellipsis-vertical-solid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ellipsis-vertical-solid1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="montero_unstable" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\montero-unstable.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrow-rotate-right-solid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow-rotate-right-solid1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Camada 3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Camada 3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="unstable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NewMonteroIcon_Unstable.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>The icon for the unstable program.</comment>
   </data>
-  <data name="montero_release" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\montero-release.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="NewMonteroIcon_Unstable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NewMonteroIcon_Unstable1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="forward_button" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\forward_button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrow-left-solid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow-left-solid1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="hamburger_menu_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\hamburger_menu_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrow-right-solid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow-right-solid1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Camada 1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Camada 1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="back_button" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\back_button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="montero-logo-unstable" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\montero-logo-unstable.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="refresh1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="MonteroWordmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MonteroWordmark1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

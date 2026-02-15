@@ -20,6 +20,10 @@ namespace Montero
         private ToolStripMenuItem darkModeButton;
         private Dictionary<PictureBox, Image> originalNavIcons;
         private Dictionary<PictureBox, Image> darkNavIcons;
+        private Image backDisabledLightIcon;
+        private Image backDisabledDarkIcon;
+        private Image forwardDisabledLightIcon;
+        private Image forwardDisabledDarkIcon;
         private readonly Dictionary<string, ChromiumWebBrowser> browsersByTabId = new Dictionary<string, ChromiumWebBrowser>();
         private readonly Dictionary<string, string> tabTitleById = new Dictionary<string, string>();
         private readonly Dictionary<string, Image> faviconCache = new Dictionary<string, Image>(StringComparer.OrdinalIgnoreCase);
@@ -59,7 +63,7 @@ namespace Montero
 
         public Form1()
         {
-            Icon = Properties.Resources.montero_unstable;
+            Icon = Properties.Resources.unstable;
             InitializeComponent();
             newWindowButton.Click += newWindowButton_Click;
             SizeChanged += Form1_SizeChanged;
@@ -124,7 +128,7 @@ namespace Montero
             browser.Dock = DockStyle.Fill;
             browser.AddressChanged += (sender, e) => Browser_AddressChanged(tabId, e);
             browser.TitleChanged += (sender, e) => Browser_TitleChanged(tabId, e);
-            browser.FrameLoadEnd += Browser_FrameLoadEnd;
+            browser.LoadingStateChanged += (sender, e) => Browser_LoadingStateChanged(tabId, e);
             browser.DownloadHandler = new DownloadHandler();
 
             browsersByTabId[tabId] = browser;
@@ -144,7 +148,11 @@ namespace Montero
             {
                 panel1.Controls.Add(browser);
                 urlBox.Text = browser.Address;
+                UpdateNavigationButtons(browser.CanGoBack, browser.CanGoForward);
+                return;
             }
+
+            UpdateNavigationButtons(false, false);
         }
 
         private void CloseBrowserTab(string tabId)
@@ -232,31 +240,15 @@ namespace Montero
             });
         }
 
-        private void Browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
+        private void Browser_LoadingStateChanged(string tabId, LoadingStateChangedEventArgs e)
         {
-            if (!e.Frame.IsMain)
+            SafeUiInvoke(() =>
             {
-                return;
-            }
-
-            string isDarkMode = AppContainer.IsDarkModeEnabled ? "true" : "false";
-            string script =
-                "(function() {" +
-                "const styleId = 'montero-dark-mode-style';" +
-                "let style = document.getElementById(styleId);" +
-                "if (" + isDarkMode + ") {" +
-                " if (!style) {" +
-                "  style = document.createElement('style');" +
-                "  style.id = styleId;" +
-                "  style.textContent = ':root{color-scheme:dark!important;}html,body{background:#101114!important;color:#e6e6e6!important;}';" +
-                "  if (document.head) { document.head.appendChild(style); }" +
-                " }" +
-                "} else if (style) {" +
-                " style.remove();" +
-                "}" +
-                "})();";
-
-            e.Frame.ExecuteJavaScriptAsync(script);
+                if (tabBar.SelectedTabId == tabId)
+                {
+                    UpdateNavigationButtons(e.CanGoBack, e.CanGoForward);
+                }
+            });
         }
 
         private void TabBar_AddTabRequested(object sender, EventArgs e)
@@ -320,27 +312,7 @@ namespace Montero
                 darkModeButton.Checked = dark;
             }
 
-            ApplyDarkModeToAllPages();
-        }
-
-        private void ApplyDarkModeToAllPages()
-        {
-            foreach (var browser in browsersByTabId.Values)
-            {
-                if (browser == null || browser.IsDisposed || browser.IsLoading)
-                {
-                    continue;
-                }
-
-                browser.GetMainFrame().ExecuteJavaScriptAsync(
-                    "(function() {" +
-                    "const id='montero-dark-mode-style';" +
-                    "let s=document.getElementById(id);" +
-                    "if (" + (AppContainer.IsDarkModeEnabled ? "true" : "false") + ") {" +
-                    " if(!s){s=document.createElement('style');s.id=id;s.textContent=':root{color-scheme:dark!important;}html,body{background:#101114!important;color:#e6e6e6!important;}';document.head&&document.head.appendChild(s);}" +
-                    "} else if(s) { s.remove(); }" +
-                    "})();");
-            }
+            ClearForcedPageThemeStyles();
         }
 
         private void darkModeButton_CheckedChanged(object sender, EventArgs e)
@@ -354,6 +326,7 @@ namespace Montero
             if (ActiveBrowser != null && ActiveBrowser.CanGoBack)
             {
                 ActiveBrowser.Back();
+                UpdateNavigationButtonsState();
             }
         }
 
@@ -366,6 +339,7 @@ namespace Montero
             if (ActiveBrowser != null && ActiveBrowser.CanGoForward)
             {
                 ActiveBrowser.Forward();
+                UpdateNavigationButtonsState();
             }
         }
 
@@ -431,6 +405,7 @@ namespace Montero
         private void pictureBox4_Click(object sender, EventArgs e)
         {
             ActiveBrowser?.Reload();
+            UpdateNavigationButtonsState();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -462,6 +437,11 @@ namespace Montero
             {
                 darkNavIcons[entry.Key] = InvertImage(entry.Value);
             }
+
+            backDisabledLightIcon = CreateDisabledNavImage(originalNavIcons[pictureBox1]);
+            backDisabledDarkIcon = CreateDisabledNavImage(darkNavIcons[pictureBox1]);
+            forwardDisabledLightIcon = CreateDisabledNavImage(originalNavIcons[pictureBox2]);
+            forwardDisabledDarkIcon = CreateDisabledNavImage(darkNavIcons[pictureBox2]);
         }
 
         private void ApplyNavigationIconTheme(bool dark)
@@ -472,6 +452,8 @@ namespace Montero
             {
                 entry.Key.BackgroundImage = entry.Value;
             }
+
+            UpdateNavigationButtonsState();
         }
 
         private static Image InvertImage(Image image)
@@ -496,6 +478,53 @@ namespace Montero
 
             source.Dispose();
             return output;
+        }
+
+        private static Image CreateDisabledNavImage(Image image)
+        {
+            if (image == null)
+            {
+                return null;
+            }
+
+            Bitmap source = new Bitmap(image);
+            Bitmap output = new Bitmap(source.Width, source.Height);
+            using (Graphics g = Graphics.FromImage(output))
+            {
+                g.Clear(Color.Transparent);
+                ControlPaint.DrawImageDisabled(g, source, 0, 0, Color.Transparent);
+            }
+
+            source.Dispose();
+            return output;
+        }
+
+        private void UpdateNavigationButtonsState()
+        {
+            ChromiumWebBrowser browser = ActiveBrowser;
+            if (browser == null)
+            {
+                UpdateNavigationButtons(false, false);
+                return;
+            }
+
+            UpdateNavigationButtons(browser.CanGoBack, browser.CanGoForward);
+        }
+
+        private void UpdateNavigationButtons(bool canGoBack, bool canGoForward)
+        {
+            bool dark = AppContainer.IsDarkModeEnabled;
+
+            pictureBox1.Cursor = canGoBack ? Cursors.Default : Cursors.Default;
+            pictureBox2.Cursor = canGoForward ? Cursors.Default : Cursors.Default;
+
+            pictureBox1.BackgroundImage = canGoBack
+                ? (dark ? darkNavIcons[pictureBox1] : originalNavIcons[pictureBox1])
+                : (dark ? backDisabledDarkIcon : backDisabledLightIcon);
+
+            pictureBox2.BackgroundImage = canGoForward
+                ? (dark ? darkNavIcons[pictureBox2] : originalNavIcons[pictureBox2])
+                : (dark ? forwardDisabledDarkIcon : forwardDisabledLightIcon);
         }
 
         private void ApplyWindowChrome()
@@ -586,6 +615,26 @@ namespace Montero
             }
             catch
             {
+            }
+        }
+
+        private void ClearForcedPageThemeStyles()
+        {
+            const string removeScript = "(function(){var s=document.getElementById('montero-dark-mode-style'); if(s){s.remove();}})();";
+            foreach (var browser in browsersByTabId.Values)
+            {
+                if (browser == null || browser.IsDisposed)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    browser.GetMainFrame().ExecuteJavaScriptAsync(removeScript);
+                }
+                catch
+                {
+                }
             }
         }
 

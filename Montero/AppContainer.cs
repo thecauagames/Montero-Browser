@@ -23,7 +23,7 @@ namespace Montero
             AeroPeekEnabled = false;
             ShowTooltips = true;
             TabRenderer = new Win11TabRenderer(this);
-            Icon = Properties.Resources.montero_unstable;
+            Icon = Properties.Resources.unstable;
             Text = "Montero";
             BackColor = Color.FromArgb(30, 30, 30);
         }
