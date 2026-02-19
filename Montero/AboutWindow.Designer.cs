@@ -110,6 +110,7 @@
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "Check for updates";
             this.linkLabel1.VisitedLinkColor = System.Drawing.Color.White;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // button1
             // 
@@ -128,13 +129,13 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("TangoSans", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.Control;
-            this.label2.Location = new System.Drawing.Point(220, 91);
+            this.label2.Location = new System.Drawing.Point(220, 88);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(168, 28);
+            this.label2.Size = new System.Drawing.Size(154, 30);
             this.label2.TabIndex = 2;
-            this.label2.Text = "0.1.22.1 (64-bit)";
+            this.label2.Text = "0.1.36 (64-bit)";
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label1
