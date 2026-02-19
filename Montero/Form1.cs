@@ -16,6 +16,7 @@ namespace Montero
     {
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
+        private const string CannotConnectPageFileName = "cannotConnect.html";
 
         private ToolStripMenuItem darkModeButton;
         private Dictionary<PictureBox, Image> originalNavIcons;
@@ -129,6 +130,7 @@ namespace Montero
             browser.AddressChanged += (sender, e) => Browser_AddressChanged(tabId, e);
             browser.TitleChanged += (sender, e) => Browser_TitleChanged(tabId, e);
             browser.LoadingStateChanged += (sender, e) => Browser_LoadingStateChanged(tabId, e);
+            browser.LoadError += (sender, e) => Browser_LoadError(browser, e);
             browser.DownloadHandler = new DownloadHandler();
 
             browsersByTabId[tabId] = browser;
@@ -247,6 +249,45 @@ namespace Montero
                 if (tabBar.SelectedTabId == tabId)
                 {
                     UpdateNavigationButtons(e.CanGoBack, e.CanGoForward);
+                }
+            });
+        }
+
+        private void Browser_LoadError(ChromiumWebBrowser browser, LoadErrorEventArgs e)
+        {
+            if (browser == null || browser.IsDisposed || e == null || e.Frame == null)
+            {
+                return;
+            }
+
+            if (!e.Frame.IsMain || e.ErrorCode == CefErrorCode.Aborted)
+            {
+                return;
+            }
+
+            if (IsCannotConnectPageUrl(e.FailedUrl))
+            {
+                return;
+            }
+
+            string cannotConnectPageUrl = ResolveCannotConnectPageUrl();
+            SafeUiInvoke(() =>
+            {
+                if (browser.IsDisposed)
+                {
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(cannotConnectPageUrl))
+                {
+                    browser.Load(cannotConnectPageUrl);
+                }
+                else
+                {
+                    browser.LoadHtml(
+                        "<html><body style='font-family:Segoe UI;background:#1f232a;color:#e6e6e6;padding:24px'>" +
+                        "<h2>Cannot connect</h2><p>Montero could not load this page.</p></body></html>",
+                        "about:blank");
                 }
             });
         }
@@ -682,6 +723,36 @@ namespace Montero
             }
 
             Text = FormatWindowTitle(title);
+        }
+
+        private static bool IsCannotConnectPageUrl(string url)
+        {
+            return !string.IsNullOrWhiteSpace(url) &&
+                   url.IndexOf(CannotConnectPageFileName, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static string ResolveCannotConnectPageUrl()
+        {
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            string[] candidates =
+            {
+                Path.Combine(baseDir, "Internal", "ErrorPages", CannotConnectPageFileName),
+                Path.Combine(baseDir, "..", "Internal", "ErrorPages", CannotConnectPageFileName),
+                Path.Combine(baseDir, "..", "..", "Internal", "ErrorPages", CannotConnectPageFileName),
+                Path.Combine(baseDir, "..", "..", "..", "Internal", "ErrorPages", CannotConnectPageFileName),
+                Path.Combine(Directory.GetCurrentDirectory(), "Internal", "ErrorPages", CannotConnectPageFileName)
+            };
+
+            foreach (string candidate in candidates)
+            {
+                string fullPath = Path.GetFullPath(candidate);
+                if (File.Exists(fullPath))
+                {
+                    return new Uri(fullPath).AbsoluteUri;
+                }
+            }
+
+            return null;
         }
 
     }

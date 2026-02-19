@@ -1,0 +1,19 @@
+h1, p , li{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+}
+
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    min-height: 90vh;
+}
+
+.text {
+    display: block;
+}
+li {
+    clear: left;
+}
