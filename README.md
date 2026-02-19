@@ -14,7 +14,7 @@ Supports dark mode, tabbing and a download system.
 ## System Requirements
 - .NET Framework 4.8 on Windows (64-bit)
 - [Visual C++ 2019 Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) for the time being
-- Windows 11 until further testing
+- Windows 8.1, Windows 10 and Windows 11
 
 # Screenshots
 
