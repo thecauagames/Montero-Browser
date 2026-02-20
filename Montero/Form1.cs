@@ -75,7 +75,7 @@ namespace Montero
             EnsureNavigationIconsPrepared();
             InitializePhotonTabs();
 
-            if (!Cef.IsInitialized)
+            if (Cef.IsInitialized != true)
             {
                 var settings = new CefSettings
                 {

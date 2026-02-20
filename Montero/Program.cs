@@ -23,7 +23,7 @@ namespace Montero
 
         private static void OnApplicationExit(object sender, EventArgs e)
         {
-            if (Cef.IsInitialized)
+            if (Cef.IsInitialized != true)
             {
                 Cef.Shutdown();
             }

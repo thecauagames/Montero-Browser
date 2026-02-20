@@ -1,68 +1,140 @@
-﻿using System;
 using CefSharp;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Montero
 {
-    class DownloadHandler : IDownloadHandler
+    internal sealed class DownloadHandler : IDownloadHandler
     {
-        public event EventHandler<DownloadItem> OnBeforeDownloadFired;
+        private readonly SynchronizationContext uiContext;
+        private readonly object syncLock = new object();
+        private readonly HashSet<int> completionNotifiedIds = new HashSet<int>();
+        private readonly HashSet<int> cancelledNotifiedIds = new HashSet<int>();
 
-        public event EventHandler<DownloadItem> OnDownloadUpdatedFired;
+        public DownloadHandler()
+        {
+            uiContext = SynchronizationContext.Current ?? new WindowsFormsSynchronizationContext();
+        }
 
         public bool CanDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, string url, string requestMethod)
         {
             return true;
         }
 
-        public void OnBeforeDownload(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem, IBeforeDownloadCallback callback)
+        public bool OnBeforeDownload(
+            IWebBrowser chromiumWebBrowser,
+            IBrowser browser,
+            DownloadItem downloadItem,
+            IBeforeDownloadCallback callback)
         {
-            if (downloadItem.IsValid)
+            if (downloadItem == null || callback == null || callback.IsDisposed)
             {
-                Console.WriteLine("== File information ========================");
-                Console.WriteLine(" File URL: {0}", downloadItem.Url);
-                Console.WriteLine(" Suggested FileName: {0}", downloadItem.SuggestedFileName);
-                Console.WriteLine(" MimeType: {0}", downloadItem.MimeType);
-                Console.WriteLine(" Content Disposition: {0}", downloadItem.ContentDisposition);
-                Console.WriteLine(" Total Size: {0}", downloadItem.TotalBytes);
-                Console.WriteLine("============================================");
+                return false;
             }
 
-            OnBeforeDownloadFired?.Invoke(this, downloadItem);
-
-            if (!callback.IsDisposed)
+            uiContext.Post(_ =>
             {
-                using (callback)
+                if (callback.IsDisposed)
                 {
-                    callback.Continue(
-                        downloadItem.SuggestedFileName,
-                        showDialog: true
-                    );
+                    return;
                 }
+
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Title = "Save file";
+                    saveDialog.FileName = string.IsNullOrWhiteSpace(downloadItem.SuggestedFileName)
+                        ? "download"
+                        : downloadItem.SuggestedFileName;
+                    saveDialog.InitialDirectory = GetDownloadsPath();
+                    saveDialog.Filter = "All files (*.*)|*.*";
+                    saveDialog.RestoreDirectory = true;
+
+                    DialogResult result = saveDialog.ShowDialog();
+                    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(saveDialog.FileName))
+                    {
+                        callback.Continue(saveDialog.FileName, showDialog: false);
+                        return;
+                    }
+                }
+
+                callback.Dispose();
+            }, null);
+
+            return true;
+        }
+
+        public void OnDownloadUpdated(
+            IWebBrowser chromiumWebBrowser,
+            IBrowser browser,
+            DownloadItem downloadItem,
+            IDownloadItemCallback callback)
+        {
+            if (downloadItem == null)
+            {
+                return;
+            }
+
+            if (downloadItem.IsComplete)
+            {
+                bool shouldNotify;
+                lock (syncLock)
+                {
+                    shouldNotify = completionNotifiedIds.Add(downloadItem.Id);
+                }
+
+                if (!shouldNotify)
+                {
+                    return;
+                }
+
+                string path = downloadItem.FullPath;
+                uiContext.Post(_ =>
+                {
+                    MessageBox.Show(
+                        string.IsNullOrWhiteSpace(path)
+                            ? "Download completed."
+                            : "Download completed:\n" + path,
+                        "Download",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }, null);
+                return;
+            }
+
+            if (downloadItem.IsCancelled)
+            {
+                bool shouldNotify;
+                lock (syncLock)
+                {
+                    shouldNotify = cancelledNotifiedIds.Add(downloadItem.Id);
+                }
+
+                if (!shouldNotify)
+                {
+                    return;
+                }
+
+                uiContext.Post(_ =>
+                {
+                    MessageBox.Show(
+                        "Download cancelled.",
+                        "Download",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }, null);
             }
         }
 
-        /// https://cefsharp.github.io/api/51.0.0/html/T_CefSharp_DownloadItem.htm
-        public void OnDownloadUpdated(IWebBrowser chromiumWebBrowser, IBrowser browser, DownloadItem downloadItem, IDownloadItemCallback callback)
+        private static string GetDownloadsPath()
         {
-            OnDownloadUpdatedFired?.Invoke(this, downloadItem);
-
-            if (downloadItem.IsValid)
-            {
-                // Show progress of the download
-                if (downloadItem.IsInProgress && (downloadItem.PercentComplete != 0))
-                {
-                    Console.WriteLine(
-                        "Current Download Speed: {0} bytes ({1}%)",
-                        downloadItem.CurrentSpeed,
-                        downloadItem.PercentComplete
-                    );
-                }
-
-                if (downloadItem.IsComplete)
-                {
-                    Console.WriteLine("The download has been finished !");
-                }
-            }
+            string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string downloads = Path.Combine(userProfile, "Downloads");
+            return Directory.Exists(downloads)
+                ? downloads
+                : Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         }
     }
 }
