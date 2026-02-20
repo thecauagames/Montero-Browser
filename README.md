@@ -14,7 +14,7 @@ Supports dark mode, tabbing and a download system.
 ## System Requirements
 - .NET Framework 4.8 on Windows (64-bit)
 - [Visual C++ 2022 Redistributable](https://download.visualstudio.microsoft.com/download/pr/571ad766-28d1-4028-9063-0fa32401e78f/5D3D8C6779750F92F3726C70E92F0F8BF92D3AE2ABD43BA28C6306466DE8A144/VC_redist.x64.exe) 
-- Windows 8.1, Windows 10 and Windows 11
+- Windows 10 and Windows 11
 
 # Screenshots
 
